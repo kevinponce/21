@@ -152,6 +152,32 @@ class Game
     
     valid
   end
+  
+  def double_down
+    if self.status == INPROGRESS
+      valid = true
+      if self.player_i == -1
+        valid = false
+      else 
+        bet = self.players[self.player_i].bet
+        money = self.players[self.player_i].money
+        if money >= bet
+          hit
+
+          self.players[self.player_i].bet = bet*2
+          self.players[self.player_i].money = money-bet
+
+          stand
+        else
+          valid = false
+        end
+      end
+    else
+      valid = false
+    end
+    
+    valid
+  end
 
   def calc_score(cards)
     score = 0

@@ -575,6 +575,37 @@ describe 'game' do
     end
   end
 
+  describe 'double_down' do
+    before :each do 
+      @game = Game.new
+  
+      player1 = Player.new(5,"Test name")
+      player2  = Player.new(10,"Test name")
+
+      @game.add_player(player1)
+      @game.add_player(player2)
+
+      @game.players[0].place_bet(2)
+      @game.players[1].place_bet(10)
+      @game.get_decks(1)
+      @game.deal
+    end
+
+    it 'player1 doubles down' do
+      expect(@game.double_down).to be_truthy
+    end
+
+    it 'player2 fails at double down' do
+      @game.double_down
+      expect(@game.double_down).to be_falsey
+    end
+
+    it 'player1 doubles down card length 3' do
+      @game.double_down
+      expect(@game.players[0].cards.length).to eq(3)
+    end
+  end
+
   describe 'calc_score' do
     before :each do 
       @game = Game.new
