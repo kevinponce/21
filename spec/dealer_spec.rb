@@ -99,24 +99,56 @@ describe 'dealer' do
       expect(card_check.length).to eq(3)
     end
 
-   it 'return card length is not 0' do
-     card_check = @dealer.remove_cards
+    it 'return card length is not 0' do
+      card_check = @dealer.remove_cards
 
-     expect(card_check.length).to_not eq(2)
-   end
+      expect(card_check.length).to_not eq(2)
+    end
 
-   it 'card matches' do
-     card_check = @dealer.remove_cards
+    it 'card matches' do
+      card_check = @dealer.remove_cards
 
-     expect(card_check[0]).to eq(@card1)
-   end 
+      expect(card_check[0]).to eq(@card1)
+    end 
 
-   it 'card dont matches' do
-     card_check = @dealer.remove_cards
+    it 'card dont matches' do
+      card_check = @dealer.remove_cards
  
-     card2 = Card.new(1,1)
+      card2 = Card.new(1,1)
 
-     expect(card_check[0]).to_not eq(card2)
-   end 
+      expect(card_check[0]).to_not eq(card2)
+    end 
+  end
+
+  describe 'to_s' do
+    before :each do 
+      @dealer = Dealer.new
+    end
+
+    it 'eq to "Dealer has [Ace of Spaids, 6 of Dimonds]"' do
+       card_1 = Card.new(0,0)
+       card_2 = Card.new(3,5)
+       @dealer.cards = [card_1,card_2];
+  
+       expect(@dealer.to_s).to eq("Dealer has Ace of Spaids, 6 of Dimonds");
+    end
+
+    it 'eq to "Dealer has 4 of Hearts, 8 of Clubs and wins"' do
+       card_1 = Card.new(1,3)
+       card_2 = Card.new(2,7)
+       @dealer.cards = [card_1,card_2];
+  
+       expect(@dealer.to_s).to eq("Dealer has 4 of Hearts, 8 of Clubs");
+    end
+
+    it 'eq to "Dealer has 4 of Hearts, 8 of Clubs, Jack of Spaids and busts"' do
+       card_1 = Card.new(1,3)
+       card_2 = Card.new(2,7)
+       card_3 = Card.new(0,10)
+       @dealer.cards = [card_1,card_2,card_3];
+       @dealer.status = 'busts'
+  
+       expect(@dealer.to_s).to eq("Dealer has 4 of Hearts, 8 of Clubs, Jack of Spaids and busts");
+    end
   end
 end

@@ -124,7 +124,7 @@ class Game
       valid = false
     end
 
-    score = calc_score(self.player_i)
+    score = calc_score(self.players[player_i].cards)
 
     if score >= 21
       stand
@@ -138,6 +138,9 @@ class Game
       valid = true
       if self.player_i == -1
         self.status = OVER
+        if cacl_players_score
+          player_wins
+        end
       elsif self.player_i < (self.players.length-1)
         self.player_i += 1
       else
@@ -150,13 +153,7 @@ class Game
     valid
   end
 
-  def calc_score(player_i)
-    if player_i != -1
-      cards = self.players[player_i].cards
-    else
-      cards = self.dealer.cards
-    end
-
+  def calc_score(cards)
     score = 0
     num_aces = 0
 
@@ -186,12 +183,70 @@ class Game
   def cacl_players_score
     if self.status == OVER
       self.players.each_with_index do |player,i|
-        player.score = calc_score(i)
+        player.score = calc_score(self.players[i].cards)
       end
-      self.dealer.score = calc_score(-1)
+      self.dealer.score = calc_score(self.dealer.cards)
       true
     else
       false
     end  
+  end
+
+  def player_wins
+    self.players.each_with_index do |player,player_i|
+      if player.score <= 21
+        if blackjack?(player_i)
+          player.add_money(player.bet*2.5)
+          player.status = "blackjack"
+        else
+          if dealer.score <= 21
+            if player.score >  dealer.score
+              #player wins
+              player.add_money(player.bet*2)
+              player.status = "wins"
+            elsif player.score == dealer.score
+              #push
+              player.add_money(player.bet)
+              player.status = "push"
+            else
+              player.status = "loses"
+            end
+          else
+            #player wins
+            player.add_money(player.bet*2)
+            player.status = "wins"
+          end
+        end
+      else
+        player.status = "loses"
+      end
+      player.bet = 0; 
+    end
+  end
+
+  def blackjack?(player_i)
+    if self.players[player_i].cards.length == 2
+      if calc_score(self.players[player_i].cards) == 21
+        self.players[player_i].status = 'blackjack'
+        return true
+      else
+        return false
+      end
+    else
+      return false
+    end
+  end
+
+
+  def to_s
+    return_str = ""
+    self.players.each_with_index do |player,index|
+      return_str += player.to_s
+
+      return_str += "\n"
+    end
+
+    return_str += self.dealer.to_s
+    return return_str
   end
 end
