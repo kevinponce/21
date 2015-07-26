@@ -4,8 +4,6 @@ This is portfolio work that displays my level of experience on creating a game o
 # Todo
 Change game to have a min and max bet
 Change game to not allow decimal, unless it is .5.
-Add double down.
-Add max amount of players.
 Allow players to split
 
 # contact me

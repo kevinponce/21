@@ -138,12 +138,33 @@ describe 'game' do
       expect(@game.players.length).to eq(0) 
     end
 
-    it 'count 0' do 
+    it 'game is not ready' do 
       @game.status = Game::INPROGRESS
       status = @game.add_player(@player)
 
-      expect(status).to be_falsey
+      expect(status).to eq("game is not ready")
     end
+
+    it 'sorry max number of players is 6' do 
+      @game.status = Game::READY
+      @game.add_player(@player)
+      @game.add_player(Player.new(20,"player 2"))
+      @game.add_player(Player.new(20,"player 3"))
+      @game.add_player(Player.new(20,"player 4"))
+      @game.add_player(Player.new(20,"player 5"))
+      @game.add_player(Player.new(20,"player 6"))
+
+      expect(@game.add_player(Player.new(20,"player 7"))).to eq("sorry max number of players is 6")
+    end
+
+    it 'game is not ready' do 
+      @game.status = Game::INPROGRESS
+      @game.add_player(@player)
+
+      expect(@game.add_player(@player)).to eq("game is not ready")
+    end
+
+
   end
 
   describe 'remove player' do 

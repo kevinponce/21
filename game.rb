@@ -5,7 +5,7 @@ require_relative "./player"
 require_relative "./dealer"
 
 class Game
-  attr_accessor :players, :cards, :player_i, :status, :dealer
+  attr_accessor :players, :cards, :player_i, :status, :dealer, :max_players
 
   OVER = -1
   READY = 0
@@ -17,6 +17,7 @@ class Game
     self.player_i = -1
     self.status = READY
     self.dealer = Dealer.new
+    self.max_players = 6
   end
 
   def get_decks(number_of_decks)
@@ -29,8 +30,15 @@ class Game
 
   def add_player(player)
     if self.status == READY
-      player.index = self.players.length
-      self.players << player
+      if self.players.length < self.max_players
+        player.index = self.players.length
+        self.players << player
+        return "added"
+      else
+        return "sorry max number of players is #{self.max_players}"
+      end
+    else
+      return "game is not ready"
     end
   end
 
