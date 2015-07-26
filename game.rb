@@ -170,12 +170,15 @@ class Game
         bet = self.players[self.player_i].bet
         money = self.players[self.player_i].money
         if money >= bet
-          hit
+          if hit
 
-          self.players[self.player_i].bet = bet*2
-          self.players[self.player_i].money = money-bet
+            self.players[self.player_i].bet = bet*2
+            self.players[self.player_i].money = money-bet
 
-          stand
+            stand
+          else
+            valid = false
+          end
         else
           valid = false
         end

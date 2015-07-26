@@ -10,13 +10,13 @@ player3 = Player.new(20,"Player 3")
 game = Game.new()
 game.get_decks(1)
 
-game.add_player(player1)
-game.add_player(player2)
-game.add_player(player3)
+p game.add_player(player1)
+p game.add_player(player2)
+p game.add_player(player3)
 
 
 game.players.each do |player|
-  player.place_bet(5)
+  p player.place_bet(5)
 end
 
 
@@ -34,7 +34,7 @@ p game.stand #player 1
 
 p game.hit
 p game.stand #player 2
-p game.stand #player 3
+p game.double_down #player 3
 p game.stand #dealer
 
 
