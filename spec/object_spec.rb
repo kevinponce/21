@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
-require_relative "./spec_helper"
-require_relative "../object"
+require_relative './spec_helper'
+require_relative '../object'
 
 describe 'object' do
   describe 'is_number?'do

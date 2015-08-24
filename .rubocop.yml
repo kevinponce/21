@@ -1,0 +1,7 @@
+# This is the configuration used to check the rubocop source code.
+
+Metrics/LineLength:
+  Max: 200
+AllCops:
+  Exclude:
+    - 'Guardfile'

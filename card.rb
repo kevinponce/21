@@ -11,9 +11,9 @@ class Card
     suit = self.suit.to_i unless self.suit.nil?
     number = self.number.to_i unless self.number.nil?
 
-    if !suit.nil? && !number.nil? && suit >= 0 && suit <= 3 && number >= 0 && number <= 12 
+    if !suit.nil? && !number.nil? && suit >= 0 && suit <= 3 && number >= 0 && number <= 12
       suits = ['Spaids','Hearts','Clubs','Dimonds']
-      numbers = ['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King'] 
+      numbers = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
 
       "#{numbers[self.number]} of #{suits[self.suit]}"
     else

@@ -14,15 +14,15 @@ class Cards
     self.number_of_decks = number_of_decks
     self.stack = []
 
-    for deck_i in (0..(self.number_of_decks-1))
-      for suit_i in (0..3)
-        for number_i in (0..12)
-          card = Card.new(suit_i,number_i)   
+    (0..(self.number_of_decks-1)).each do |deck_i|
+      (0..3).each do |suit_i|
+        (0..12).each do |number_i|
+          card = Card.new(suit_i,number_i)
           self.stack << card
         end
       end
     end
-  end 
+  end
 
   def get_card
     if self.stack.length > 0
@@ -48,11 +48,11 @@ class Cards
     self.stack.length
   end
 
-  def shuffle!(times)  
-    for i in 0..times
-      for card_i in 0..(self.stack.length-1)
+  def shuffle!(times)
+    (0..times).each do |i|
+      for card_i in 0..(self.stack.length - 1)
         temp = self.stack[card_i]
-        rand_i = rand(self.stack.length-1)
+        rand_i = rand(self.stack.length - 1)
         self.stack[card_i] = self.stack[rand_i]
         self.stack[rand_i] = temp
       end
