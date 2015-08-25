@@ -1,7 +1,8 @@
 #!/usr/bin/ruby
 
+# object.rb
 class Object
-  def is_number?
-    self.to_f.to_s == self.to_s || self.to_i.to_s == self.to_s
+  def number?
+    to_f.to_s == to_s || to_i.to_s == to_s
   end
 end

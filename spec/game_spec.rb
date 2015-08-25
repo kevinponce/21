@@ -278,8 +278,8 @@ describe 'game' do
 
     describe 'valid' do
       before :each do
-        allow(@game.cards).to receive(:get_number_of_cards).and_return(50)
-        allow(@game.cards).to receive(:get_card).and_return(Card.new(0, 0))
+        allow(@game.cards).to receive(:number_of_cards).and_return(50)
+        allow(@game.cards).to receive(:card).and_return(Card.new(0, 0))
       end
 
       it 'player1 has 2 cards' do
@@ -383,8 +383,8 @@ describe 'game' do
       before :each do
         card = Card.new(0, 0)
 
-        allow(@game.cards).to receive(:get_number_of_cards).and_return(50)
-        allow(@game.cards).to receive(:get_card).and_return(card)
+        allow(@game.cards).to receive(:number_of_cards).and_return(50)
+        allow(@game.cards).to receive(:card).and_return(card)
       end
 
       it 'player1 has 1 card' do
@@ -443,7 +443,7 @@ describe 'game' do
       it 'dealer gets another card' do
         @game.status = Game::INPROGRESS
         @game.player_i = -1
-        allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(15)
+        allow(@game).to receive(:calc_score).with(@game.dealer.cards).and_return(15)
         hit_return = @game.hit
 
         expect(hit_return).to be_truthy
@@ -452,7 +452,7 @@ describe 'game' do
       it 'dealer has 3 cards' do
         @game.status = Game::INPROGRESS
         @game.player_i = -1
-        allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(15)
+        allow(@game).to receive(:calc_score).with(@game.dealer.cards).and_return(15)
         @game.hit
 
         expect(@game.dealer.cards.length).to eq(1)
@@ -461,7 +461,7 @@ describe 'game' do
       it 'dealer does not have 2 cards' do
         @game.status = Game::INPROGRESS
         @game.player_i = -1
-        allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(15)
+        allow(@game).to receive(:calc_score).with(@game.dealer.cards).and_return(15)
         @game.hit
 
         expect(@game.dealer.cards.length).to_not eq(0)
@@ -469,11 +469,10 @@ describe 'game' do
     end
 
     it 'no cards to hit' do
-      card = Card.new(0, 0)
       @game.player_i = 0
 
-      allow(@game.cards).to receive(:get_number_of_cards).and_return(0)
-      allow(@game.cards).to receive(:get_card).and_return(card)
+      allow(@game.cards).to receive(:number_of_cards).and_return(0)
+      allow(@game.cards).to receive(:card).and_return(nil)
       allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(15)
 
       hit_return = @game.hit
@@ -484,8 +483,8 @@ describe 'game' do
     it 'no cards to hit' do
       @game.player_i = 0
 
-      allow(@game.cards).to receive(:get_number_of_cards).and_return(50)
-      allow(@game.cards).to receive(:get_card).and_return(false)
+      allow(@game.cards).to receive(:number_of_cards).and_return(50)
+      allow(@game.cards).to receive(:card).and_return(false)
       allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(15)
 
       hit_return = @game.hit
@@ -497,8 +496,8 @@ describe 'game' do
       @game.player_i = 0
       card = Card.new(0, 9) # 10
 
-      allow(@game.cards).to receive(:get_number_of_cards).and_return(51)
-      allow(@game.cards).to receive(:get_card).and_return(card)
+      allow(@game.cards).to receive(:number_of_cards).and_return(51)
+      allow(@game.cards).to receive(:card).and_return(card)
       allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(22)
 
       @game.hit
@@ -510,8 +509,8 @@ describe 'game' do
       @game.player_i = 0
       card = Card.new(0, 9) # 10
 
-      allow(@game.cards).to receive(:get_number_of_cards).and_return(51)
-      allow(@game.cards).to receive(:get_card).and_return(card)
+      allow(@game.cards).to receive(:number_of_cards).and_return(51)
+      allow(@game.cards).to receive(:card).and_return(card)
       allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(21)
 
       @game.hit
@@ -523,8 +522,8 @@ describe 'game' do
       @game.player_i = 0
       card = Card.new(0, 9) # 10
 
-      allow(@game.cards).to receive(:get_number_of_cards).and_return(51)
-      allow(@game.cards).to receive(:get_card).and_return(card)
+      allow(@game.cards).to receive(:number_of_cards).and_return(51)
+      allow(@game.cards).to receive(:card).and_return(card)
       allow(@game).to receive(:calc_score).with(@game.players[@game.player_i].cards).and_return(23)
 
       @game.hit
@@ -568,7 +567,7 @@ describe 'game' do
 
     it 'dealer is done' do
       allow(@game).to receive(:cacl_players_score).and_return(true)
-      allow(@game).to receive(:player_wins)
+      allow(@game).to receive(:players_status)
       @game.stand
       @game.stand
       @game.stand
@@ -801,7 +800,7 @@ describe 'game' do
     end
   end
 
-  describe 'player_wins' do
+  describe 'players_status' do
     before :each do
       @game = Game.new
       player = Player.new(5, 'Test name')
@@ -812,7 +811,7 @@ describe 'game' do
       @game.players[0].score = 20
       @game.dealer.score = 19
       @game.players[0].bet = 5
-      @game.player_wins
+      @game.players_status
 
       expect(@game.players[0].money).to eq(15)
     end
@@ -821,7 +820,7 @@ describe 'game' do
       @game.players[0].score = 22
       @game.dealer.score = 19
       @game.players[0].bet = 5
-      @game.player_wins
+      @game.players_status
 
       expect(@game.players[0].money).to eq(5)
     end
@@ -830,7 +829,7 @@ describe 'game' do
       @game.players[0].score = 17
       @game.dealer.score = 24
       @game.players[0].bet = 5
-      @game.player_wins
+      @game.players_status
 
       expect(@game.players[0].money).to eq(15)
     end
@@ -839,7 +838,7 @@ describe 'game' do
       @game.players[0].score = 23
       @game.dealer.score = 24
       @game.players[0].bet = 5
-      @game.player_wins
+      @game.players_status
 
       expect(@game.players[0].money).to eq(5)
     end
@@ -848,39 +847,9 @@ describe 'game' do
       @game.players[0].score = 17
       @game.dealer.score = 20
       @game.players[0].bet = 5
-      @game.player_wins
+      @game.players_status
 
       expect(@game.players[0].money).to eq(5)
-    end
-  end
-
-  describe 'blackjack?' do
-    before :each do
-      @game = Game.new
-      player = Player.new(5, 'Test name')
-      @game.add_player(player)
-    end
-
-    it 'has blackjack' do
-      card_1 = Card.new(0, 0)
-      card_2 = Card.new(0, 10)
-      @game.players[0].cards = [card_1, card_2]
-      expect(@game.blackjack?(0)).to be_truthy
-    end
-
-    it 'does not blackjack' do
-      card_1 = Card.new(0, 1)
-      card_2 = Card.new(0, 10)
-      @game.players[0].cards = [card_1, card_2]
-      expect(@game.blackjack?(0)).to be_falsey
-    end
-
-    it 'does not blackjack' do
-      card_1 = Card.new(0, 7)
-      card_2 = Card.new(0, 8)
-      card_3 = Card.new(0, 3)
-      @game.players[0].cards = [card_1, card_2, card_3]
-      expect(@game.blackjack?(0)).to be_falsey
     end
   end
 

@@ -242,6 +242,16 @@ describe 'player' do
 
       expect(@player.cards.length).to_not eq(1)
     end
+
+    it 'add card return true' do
+      card1 = Card.new(1, 1)
+
+      expect(@player.add_card(card1)).to be_truthy
+    end
+
+    it 'add card return true' do
+      expect(@player.add_card(nil)).to be_falsey
+    end
   end
 
   describe 'remove cards ' do

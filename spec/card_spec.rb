@@ -179,4 +179,39 @@ describe 'card' do
       expect(card != card2).to be_falsey
     end
   end
+
+  describe 'valid?' do
+    it 'Ace spad card is valid' do
+      expect(Card.new(0, 0).valid?).to be_truthy
+    end
+
+    it '6 Heart card is valid' do
+      expect(Card.new(1, 5).valid?).to be_truthy
+    end
+
+    it 'King Clubs card is valid' do
+      expect(Card.new(2, 12).valid?).to be_truthy
+    end
+
+    it '7 Dimonds card is valid' do
+      expect(Card.new(3, 6).valid?).to be_truthy
+    end
+
+    it 'invlid suit too large' do
+      expect(Card.new(4, 0).valid?).to be_falsey
+    end
+
+    it 'invlid suit too low' do
+      expect(Card.new(-1, 0).valid?).to be_falsey
+    end
+
+    it 'invalid card number to low' do
+      card = Card.new(0, -1)
+      expect(card.valid?).to be_falsey
+    end
+
+    it 'invalid card number to high' do
+      expect(Card.new(1, 13).valid?).to be_falsey
+    end
+  end
 end

@@ -4,6 +4,7 @@ require_relative './cards'
 require_relative './player'
 require_relative './dealer'
 
+# game.rb
 class Game
   attr_accessor :players, :cards, :player_i, :status, :dealer, :max_players
 
@@ -29,27 +30,24 @@ class Game
   end
 
   def add_player(player)
-    if self.status == READY
-      if self.players.length < self.max_players
-        player.index = self.players.length
-        self.players << player
-        return 'added'
-      else
-        return "sorry max number of players is #{self.max_players}"
-      end
+    return 'game is not ready' if status != READY
+    if players.length < max_players
+      player.index = players.length
+      players << player
+      return 'added'
     else
-      return 'game is not ready'
+      return "sorry max number of players is #{max_players}"
     end
   end
 
   def remove_player(player_i)
     if status == READY && !players[player_i].nil?
-      player = self.players[player_i]
+      player = players[player_i]
 
-      self.players.delete_at(player_i)
+      players.delete_at(player_i)
 
-      for p_i in player_i..(players.length-1)
-        self.players[p_i].index = p_i
+      (player_i..(players.length - 1)).each do |p_i|
+        players[p_i].index = p_i
       end
 
       player
@@ -59,155 +57,76 @@ class Game
   end
 
   def player_betted
-    betted = true    
+    betted = true
 
     players.each do |player|
-      if player.bet == 0
-        betted = false
-      end
+      betted = false if player.bet == 0
     end
 
     betted
   end
 
   def deal
-    valid = true
+    card_added = true
     dealer.score = 0 # resets the dealer score
     (0..1).each do
       players.each do |player|
-        player.score = 0 # resets score
-        if valid && cards.get_number_of_cards > 0
-          card = cards.get_card
-
-          if card
-            player.add_card(card)
-          else
-            valid = false
-          end
-        else
-          valid = false
-        end
+        card_added = player_deal_card(player) if card_added
       end
 
-      if valid && cards.get_number_of_cards > 0
-        card = cards.get_card
-
-        if card
-          dealer.add_card(card)
-        else
-          valid = false
-        end
-      else
-        valid = false
-      end
+      card_added = dealer_deal_card if card_added
     end
 
-    if valid
+    if card_added
       self.status = INPROGRESS
       self.player_i = 0
     end
 
-    valid
+    card_added
   end
 
   def hit
-    if status == INPROGRESS
-      valid = true
-      if cards.get_number_of_cards > 0
-        card = cards.get_card
+    return false unless status == INPROGRESS
 
-        if card
-          if player_i != -1
-            players[player_i].add_card(card)
-          else
-            dealer.add_card(card)
-          end
-        else
-          valid = false
-        end
-      else
-        valid = false
-      end
+    if player_i != -1
+      card_added = player_hit(player_i)
+      score = calc_score(players[player_i].cards)
     else
-      valid = false
+      card_added = dealer_hit
+      score = calc_score(dealer.cards)
     end
-
-    score = calc_score(players[player_i].cards)
 
     stand if score >= 21
 
-    valid
+    card_added
   end
 
   def stand
-    if status == INPROGRESS
-      valid = true
-      if player_i == -1
-        self.status = OVER
-        player_wins if cacl_players_score
-      elsif player_i < (players.length - 1)
-        self.player_i += 1
-      else
-        self.player_i = -1
-      end
+    return false unless status == INPROGRESS
+    if player_i == -1
+      self.status = OVER
+      players_status if cacl_players_score
+    elsif player_i < (players.length - 1)
+      self.player_i += 1
     else
-      valid = false
+      self.player_i = -1
     end
-
-    valid
   end
 
   def double_down
-    if status == INPROGRESS
-      valid = true
-      if player_i == -1
-        valid = false
-      else
-        bet = players[player_i].bet
-        money = players[player_i].money
-        if money >= bet
-          if hit
-            players[player_i].bet = bet * 2
-            players[player_i].money = money - bet
+    return false unless status == INPROGRESS && player_i != -1
+    bet = players[player_i].bet
 
-            stand
-          else
-            valid = false
-          end
-        else
-          valid = false
-        end
-      end
-    else
-      valid = false
-    end
+    return false unless players[player_i].money >= bet && hit
+    players[player_i].bet = bet * 2
+    players[player_i].money -= bet
 
-    valid
+    stand
   end
 
   def calc_score(cards)
-    score = 0
-    num_aces = 0
-
-    cards.each do |card|
-      if [10, 11, 12].include?(card.number)
-        score += 10
-      elsif card.number == 0
-        num_aces += 1
-      else
-        score += (card.number + 1)
-      end
-    end
-
-    (0..num_aces - 1).each do |i|
-      ace_sum = (num_aces - i) * 11 + num_aces * i
-      if (ace_sum + score) <= 21
-        score += ace_sum
-        break
-      elsif num_aces - 1 == i
-        score += num_aces
-      end
-    end
+    num_aces = get_num_aces(cards)
+    score = calc_score_with_aces(cards, num_aces)
 
     score
   end
@@ -224,48 +143,9 @@ class Game
     end
   end
 
-  def player_wins
+  def players_status
     players.each_with_index do |player, player_i|
-      if player.score <= 21
-        if blackjack?(player_i)
-          player.add_money(player.bet * 2.5)
-          player.status = 'blackjack'
-        else
-          if dealer.score <= 21
-            if player.score > dealer.score
-              # player wins
-              player.add_money(player.bet * 2)
-              player.status = 'wins'
-            elsif player.score == dealer.score
-              # push
-              player.add_money(player.bet)
-              player.status = 'push'
-            else
-              player.status = 'loses'
-            end
-          else
-            # player wins
-            player.add_money(player.bet * 2)
-            player.status = 'wins'
-          end
-        end
-      else
-        player.status = 'loses'
-      end
-      player.bet = 0
-    end
-  end
-
-  def blackjack?(player_i)
-    if players[player_i].cards.length == 2
-      if calc_score(players[player_i].cards) == 21
-        players[player_i].status = 'blackjack'
-        return true
-      else
-        return false
-      end
-    else
-      return false
+      player_status(player, player_i)
     end
   end
 
@@ -279,5 +159,106 @@ class Game
 
     return_str += dealer.to_s
     return_str
+  end
+
+  private
+
+  def blackjack?(player_i)
+    calc_score(players[player_i].cards) == 21
+  end
+
+  def player_blackjack(player)
+    player.add_money(player.bet * 2.5)
+    player.status = 'blackjack'
+    player.bet = 0
+  end
+
+  def player_wins(player)
+    player.add_money(player.bet * 2)
+    player.status = 'wins'
+    player.bet = 0
+  end
+
+  def player_push(player)
+    player.add_money(player.bet)
+    player.status = 'push'
+    player.bet = 0
+  end
+
+  def player_loses(player)
+    player.status = 'loses'
+    player.bet = 0
+  end
+
+  def player_deal_card(player)
+    player.score = 0 # resets score
+    return false if cards.number_of_cards <= 0
+    card = cards.card
+
+    player.add_card(card) if card && card.valid?
+  end
+
+  def player_hit(player_i)
+    card = cards.card
+    players[player_i].add_card(card) if card && card.valid?
+  end
+
+  def dealer_deal_card
+    card = cards.card
+    dealer.add_card(card) if card && card.valid?
+  end
+
+  def dealer_hit
+    card = cards.card
+    dealer.add_card(card) if card && card.valid?
+  end
+
+  def get_num_aces(cards)
+    aces_count = 0
+    cards.each do |card|
+      aces_count += 1 if card.number == 0
+    end
+    aces_count
+  end
+
+  def calc_score_without_aces(cards)
+    score = 0
+    cards.each do |card|
+      if [10, 11, 12].include?(card.number)
+        score += 10
+      elsif card.number != 0
+        score += (card.number + 1)
+      end
+    end
+    score
+  end
+
+  def calc_score_with_aces(cards, num_aces)
+    score = calc_score_without_aces(cards)
+    (0..num_aces - 1).each do |i|
+      ace_sum = (num_aces - i) * 11 + num_aces * i
+      if (ace_sum + score) <= 21
+        score += ace_sum
+      elsif num_aces - 1 == i
+        score += num_aces
+      end
+    end
+    score
+  end
+
+  def player_status(player, player_i)
+    if player.score > 21
+      player_loses(player)
+    elsif blackjack?(player_i)
+      player_blackjack(player)
+    elsif dealer.score > 21
+      player_wins(player)
+    elsif player.score > dealer.score
+      player_wins(player)
+    elsif player.score == dealer.score
+      player_push(player)
+    else
+      player_loses(player)
+    end
   end
 end

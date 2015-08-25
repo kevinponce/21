@@ -2,9 +2,10 @@
 
 require_relative './object.rb'
 
+# dealer.rb
 class Dealer
   attr_accessor :cards, :score, :status
- 
+
   def initialize
     self.cards = []
     self.score = 0
@@ -12,25 +13,22 @@ class Dealer
   end
 
   def add_card(card)
-    self.cards << card
+    cards << card
   end
 
   def remove_cards
     cards = self.cards
-
     self.cards = []
 
     cards
   end
 
   def to_s
-    cards = ""
-    self.cards.each_with_index do |card,index| 
+    cards = ''
+    self.cards.each_with_index do |card, index|
       cards += card.to_s
-      if index != self.cards.length-1
-        cards += ', '
-      end
+      cards += ', ' if index != self.cards.length - 1
     end
-    return "Dealer has #{cards}#{(!self.status.empty? ? ' and '+self.status : '')}"
+    "Dealer has #{cards}#{(!status.empty? ? ' and ' + status : '')}"
   end
 end

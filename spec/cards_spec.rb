@@ -72,7 +72,7 @@ describe 'cards' do
     end
   end
 
-  describe 'get_card' do
+  describe 'card' do
     describe 'fresh_cards' do
       before :each do
         @cards = Cards.new
@@ -80,13 +80,13 @@ describe 'cards' do
       end
 
       it 'get card cards should have 51 cards' do
-        @cards.get_card
+        @cards.card
 
         expect(@cards.stack.length).to eq(51)
       end
 
       it 'get card cards should not have 52 cards' do
-        @cards.get_card
+        @cards.card
 
         expect(@cards.stack.length).to_not eq(52)
       end
@@ -94,14 +94,14 @@ describe 'cards' do
 
     it 'get card cards should not have 52 cards' do
       cards = Cards.new
-      cards.get_card
+      cards.card
 
       expect(cards.stack.length).to_not eq(52)
     end
 
     it 'get card cards should not have 52 cards' do
       cards = Cards.new
-      card = cards.get_card
+      card = cards.card
 
       expect(card).to be_falsey
     end
@@ -111,7 +111,7 @@ describe 'cards' do
     before :each do
       @cards = Cards.new
       @cards.fresh_cards(1)
-      @card = @cards.get_card
+      @card = @cards.card
     end
 
     it 'cards count is 51' do
@@ -135,9 +135,9 @@ describe 'cards' do
     before :each do
       @cards = Cards.new
       @cards.fresh_cards(1)
-      card1 = @cards.get_card
-      card2 = @cards.get_card
-      card3 = @cards.get_card
+      card1 = @cards.card
+      card2 = @cards.card
+      card3 = @cards.card
 
       @cards_list = [card1, card2, card3]
     end
@@ -159,32 +159,32 @@ describe 'cards' do
     end
   end
 
-  describe 'get_number_of_cards' do
+  describe 'number_of_cards' do
     before :each do
       @cards = Cards.new
       @cards.fresh_cards(1)
     end
 
     it 'cards count is 49' do
-      @cards.get_card
-      @cards.get_card
-      @cards.get_card
+      @cards.card
+      @cards.card
+      @cards.card
 
-      expect(@cards.get_number_of_cards).to eq(49)
+      expect(@cards.number_of_cards).to eq(49)
     end
 
     it 'cards count is 51' do
-      @cards.get_card
+      @cards.card
 
-      expect(@cards.get_number_of_cards).to eq(51)
+      expect(@cards.number_of_cards).to eq(51)
     end
 
     it 'cards count is not 51' do
-      @cards.get_card
-      @cards.get_card
-      @cards.get_card
+      @cards.card
+      @cards.card
+      @cards.card
 
-      expect(@cards.get_number_of_cards).to_not eq(51)
+      expect(@cards.number_of_cards).to_not eq(51)
     end
   end
 
@@ -220,7 +220,7 @@ describe 'cards' do
 
     it 'cards length should still be 52' do
       @deck1.shuffle!(3)
-      expect(@deck1.get_number_of_cards).to eq(52)
+      expect(@deck1.number_of_cards).to eq(52)
     end
   end
 end
